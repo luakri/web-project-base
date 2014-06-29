@@ -1,0 +1,7 @@
+.project
+.sass-cache
+dist/
+node_modules/
+npm-debug.log
+!.gitkeep
+.DS_Store
