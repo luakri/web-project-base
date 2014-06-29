@@ -43,26 +43,28 @@ The project consists of the following Grunt Tasks:
 
 Tasks executed for local
 ---------
-Jshint Lint
-Json Lint
-Sass Source Maps
-Sass Style extended
-Css Autoprefixer
-Modernizr Build
-htmlbuild
+* Jshint Lint
+* Json Lint
+* Sass Source Maps
+* Sass Style extended
+* Css Autoprefixer
+* Modernizr Build
+* htmlbuild
 
 Tasks executed for production
 ---------
-Jshint Lint
-Json Lint
-Uglify Javascript
-Javascript Source Maps
-Sass Source Maps
-Sass Style compressed
-Css Autoprefixer
-Modernizr Build
-htmlbuild
-HTML Minification
+* Jshint Lint
+* Javascript concat
+* Uglify Javascript
+* Javascript Source Maps
+* Json Lint
+* Json Minify
+* Sass Source Maps
+* Sass Style compressed
+* Css Autoprefixer
+* Modernizr Build
+* htmlbuild
+* HTML Minification
 
 Usage
 ------------
@@ -76,3 +78,7 @@ To run build for production:
 
 To run project for production, after build for production:
     grunt run
+
+Changelog
+---------
+- *1.0*: Initial Release
