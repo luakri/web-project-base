@@ -1,0 +1,26 @@
+{
+    "bitwise": true,
+    "browser": true,
+    "camelcase": true,
+    "curly": true,
+    "eqeqeq": true,
+    "eqnull": true,
+    "es3": true,
+    "evil": true,
+    "immed": true,
+    "indent": 2,
+    "jquery":true,
+    "latedef": true,
+    "newcap": true,
+    "noarg": true,
+    "noempty": true,
+    "nonew": true,
+    "strict": true,
+    "undef": true,
+    "unused": true,
+    "globals": {
+        "angular": true,
+        "jQuery": true,
+        "Modernizr": true
+    }
+}

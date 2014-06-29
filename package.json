@@ -1,0 +1,30 @@
+{
+  "name": "app",
+  "version": "0.0.1",
+  "description": "Grunt demo",
+  "dependencies": {},
+  "devDependencies": {
+    "css-parse": "^1.5.3",
+    "grunt": "~0.4.1",
+    "grunt-autoprefixer": "~0.7.2",
+    "grunt-contrib-clean": "~0.5.0",
+    "grunt-contrib-compress": "^0.9.1",
+    "grunt-contrib-connect": "~0.3.0",
+    "grunt-contrib-copy": "~0.4.1",
+    "grunt-contrib-htmlmin": "^0.3.0",
+    "grunt-contrib-jshint": "~0.6.3",
+    "grunt-contrib-sass": "~0.5.0",
+    "grunt-contrib-uglify": "~0.2.7",
+    "grunt-contrib-watch": "~0.5.2",
+    "grunt-html-build": "~0.3.1",
+    "grunt-json-minify": "^0.4.0",
+    "grunt-jsonlint": "~1.0.4",
+    "grunt-modernizr": "^0.5.2",
+    "grunt-newer": "~0.6.0",
+    "load-grunt-tasks": "~0.1.0",
+    "time-grunt": "^0.3.2"
+  },
+  "engines": {
+    "node": ">=0.8.0"
+  }
+}

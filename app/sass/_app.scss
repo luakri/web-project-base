@@ -1,0 +1,31 @@
+html > body {
+  background: $color-black;
+  color: $color-white;
+  margin: 0;
+  padding: 0;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  overflow-y: hidden;
+  overflow-x: hidden;
+}
+
+
+h1 {
+  color: red;
+  font-size: 20px;
+
+  @media screen and (min-width:$breakpoint-wide) {
+    font-size: 24px;
+  }
+}
+
+.block {
+  transform: translateX(0);
+
+  @media screen and (min-width:$breakpoint-wide) {
+    transform: translateX(100px);
+  }
+}
