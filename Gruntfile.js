@@ -1,11 +1,11 @@
-/*global require:true, module:true */
+/*global require:true, module:true, __dirname:true */
 
 module.exports = function(grunt) {
   'use strict';
 
   var DIST = './dist/';
 
-  var src = (grunt.option('env')) ? './app/' : '';
+  var src = (grunt.option('env')) ? 'modules/src/' : '';
 
   // list of js files
   var files = {
@@ -13,12 +13,10 @@ module.exports = function(grunt) {
       compiled: 'modules/main.js',
       list: [
         src + 'js/lib/jquery/jquery-1.*.js',
-        src + 'modules/app.js'
-      ]
-    },
-    modernizr: {
-      list: [
-        src + 'js/lib/modernizr*.js'
+        src + 'modules/**/!(module|app)*.js',
+        src + 'modules/**/module.js',
+        src + 'modules/app.js',
+        '!' + src + 'modules/**/tests/**/*.js'
       ]
     }
   };
@@ -50,7 +48,8 @@ module.exports = function(grunt) {
     // remove a directory
     clean: {
       css: './app/css',
-      dist: './dist/'
+      dist: './dist/',
+      src: './dist/modules/src/'
     },
 
     // create a local server
@@ -59,9 +58,130 @@ module.exports = function(grunt) {
         options: {
           base: './dist',
           open: true,
-          port: 8001,
+          port: 8002,
           hostname : 'localhost'
         }
+      }
+    },
+
+    // build html
+    htmlbuild: {
+      build: {
+        src: './app/index.html',
+        dest: './dist/index.html',
+        options: {
+          beautify: false,
+          relative: false,
+          prefix: '/',
+          scripts: {
+            main: {
+              cwd: './app/',
+              files: files.main.list
+            }
+          }
+        }
+      },
+      prod: {
+        src: './app/index.html',
+        dest: './dist/index.html',
+        options: {
+          beautify: false,
+          relative: false,
+          prefix: '/',
+          scripts: {
+            main: {
+              cwd: './dist/',
+              files: files.main.list
+            }
+          }
+        }
+      }
+    },
+
+    // minify html
+    htmlmin: {
+      dist: {
+        options: {
+          collapseWhitespace: true,
+          collapseBooleanAttributes: true,
+          removeAttributeQuotes: true,
+          removeRedundantAttributes: true
+        },
+        expand: true,
+        cwd: DIST,
+        src: ['**/*.html'],
+        dest: DIST
+      }
+    },
+
+    // replace tasks
+    replace: {
+      build: {
+        src: DIST + 'index.html',
+        overwrite: true,
+        replacements: [
+          {
+            from: "<!-- builder:",
+            to: "<!-- build:"
+          },
+          {
+            from: "<!-- endbuilder",
+            to: "<!-- endbuild"
+          }
+        ]
+      },
+      sourcemap : {
+        src : DIST + '/modules/main.js',
+        overwrite: true,
+        replacements: [
+          {
+            from: "//# sourceMappingURL=/main.js.map",
+            to: "//# sourceMappingURL=/modules/main.js.map"
+          }
+        ]
+      }
+    },
+
+    // Use min tasks.
+    useminPrepare: {
+      html: DIST + 'index.html',
+      options: {
+        dest: DIST
+      }
+    },
+
+    usemin:{
+      html: DIST + 'index.html',
+      options: {
+        assetsDirs: DIST
+      }
+    },
+
+    // Concat tasks.
+    concat: {},
+
+    // Uglify tasks.
+    uglify: {
+      /*options: {
+        sourceMap: true,
+        sourceMapIncludeSources: true,
+        sourceMapName: DIST + '/modules/main.js.map'
+      }*/
+    },
+
+    // File revision tasks.
+    filerev: {
+      options: {
+        length: 4
+      },
+      dist: {
+        files: [{
+          src: [
+            DIST + '/modules/**/*.js',
+            DIST + '/js/lib/**/*.js',
+            DIST + '/css/*.{css,map}'
+          ]
+        }]
       }
     },
 
@@ -86,7 +206,7 @@ module.exports = function(grunt) {
       html: {
         files: [{
           expand: true,
-          src: ['{,*/}*.html', '!build/{,*/}*.html'],
+          src: ['**/*.html', '!index.html', '!build/**/*.html', '!modules/**/tests/**/*.html'],
           cwd: './app/',
           dest: './dist/'
         }]
@@ -102,7 +222,7 @@ module.exports = function(grunt) {
       'javascript-dev': {
         files: [{
           expand: true,
-          src: ['**/*.js'],
+          src: ['**/*.js', '!modules/**/tests/**/*.js'],
           cwd: './app/',
           dest: './dist/'
         }]
@@ -110,9 +230,17 @@ module.exports = function(grunt) {
       'javascript-prod': {
         files: [{
           expand: true,
-          src: ['**/*.js', '!**/*.min.js'],
-          cwd: './app/modules/',
+          src: ['**/*.js', '!modules/**/tests/**/*.js'],
+          cwd: './app/',
           dest: './dist/modules/src/'
+        }]
+      },
+      'javascript-modernizr': {
+        files: [{
+          expand: true,
+          src: ['modernizr.js'],
+          cwd: './app/js/lib/',
+          dest: './dist/js/lib/'
         }]
       },
       json: {
@@ -125,59 +253,6 @@ module.exports = function(grunt) {
       }
     },
 
-    // build html
-    htmlbuild: {
-      build: {
-        src: './app/index.html',
-        dest: './dist/index.html',
-        options: {
-          beautify: true,
-          relative: false,
-          scripts: {
-            main: {
-              cwd: './app/',
-              files: files.main.list
-            },
-            modernizr: {
-              cwd: './app/',
-              files: files.modernizr.list
-            }
-          }
-        }
-      },
-      prod: {
-        src: './app/index.html',
-        dest: './dist/index.html',
-        options: {
-          beautify: true,
-          relative: false,
-          scripts: {
-            main: {
-              cwd: './dist',
-              files: [files.main.compiled]
-            },
-            modernizr: {
-              cwd: './dist',
-              files: [files.modernizr.list]
-            }
-          }
-        }
-      }
-    },
-
-    htmlmin: {
-      dist: {
-        options: {
-          removeComments: true,
-          collapseWhitespace: true
-        },
-        expand: true,
-        cwd: './dist',
-        src: ['**/*.html'],
-        dest: './dist'
-      }
-    },
-
     // hint javascript
     jshint: {
       options: {
@@ -186,6 +261,9 @@ module.exports = function(grunt) {
       },
       dev: {
         src: ['./app/modules/{,*/}*.js']
+      },
+      unit: {
+        src: ['./app/modules/**/tests/**/*.js']
       },
       grunt: {
         src: './Gruntfile.js'
@@ -233,7 +311,7 @@ module.exports = function(grunt) {
     // Minify json.
     'json-minify': {
       prod: {
-        files: './app/data/*.json'
+        files: DIST + 'data/*.json'
       }
     },
 
@@ -245,7 +323,8 @@ module.exports = function(grunt) {
       },
       dev: {
         options: {
-          style: 'expanded'
+          style: 'expanded',
+          sourcemap: true
         },
         files: [{
           expand: true,
@@ -254,37 +333,6 @@ module.exports = function(grunt) {
           dest: './app/css/',
           ext: '.css'
         }]
-      },
-      prod: {
-        options: {
-          style: 'compressed'
-        },
-        files: [{
-          expand: true,
-          src: ['{,*/}*.scss', '!**/_*.scss'],
-          cwd: './app/sass/',
-          dest: './app/css/',
-          ext: '.css'
-        }]
-      }
-    },
-
-    // Uglify tasks.
-    uglify: {
-      prod : {
-        options: {
-          mangle: true,
-          sourceMapPrefix: 3,
-          sourceMap: './dist/modules/main.js.map',
-          sourceMapRoot: 'src/',
-          sourceMappingURL: 'main.js.map'
-        },
-        files: [
-          {
-            dest: DIST + files.main.compiled,
-            src: files.main.list
-          }
-        ]
       }
     },
 
@@ -300,7 +348,7 @@ module.exports = function(grunt) {
       },
       html: {
         expand: true,
-        files: ['./app/{,*/}*.html', '!./app/build/**/*.html'],
+        files: ['./app/**/*.html', '!./app/build/**/*.html'],
         tasks: ['newer:jshint:dev', 'newer:copy:javascript-dev', 'htmlbuild:build', 'newer:copy:html']
       },
       images: {
@@ -310,7 +358,7 @@ module.exports = function(grunt) {
       },
       javascript: {
         expand: true,
-        files: './app/{,*/}*.js',
+        files: './app/**/*.js',
         tasks: ['newer:jshint:dev','newer:copy:javascript-dev']
       },
       sass: {
@@ -323,55 +371,122 @@ module.exports = function(grunt) {
         files: ['./app/{,*/}*.json', '!./app/lib/**/*.json'],
         tasks: ['newer:jsonlint', 'newer:copy:json']
       }
+    },
+
+    // Unit tests tasks.
+    karma : {
+      options: {
+        browsers: [grunt.option('browser') || 'Chrome'],
+        singleRun: grunt.option('singlerun') || false
+      },
+      unit: {
+        configFile : 'config/karma.conf.js'
+      }
+    },
+
+    // E2E tests tasks.
+    shell: {
+      /*jshint camelcase:false */
+      protractor_webdriver_manager_update: {
+        options: {
+          stdout: true
+        },
+        command: require('path').resolve(__dirname, 'node_modules', 'grunt-protractor-runner', 'node_modules', '.bin', 'webdriver-manager') + ' update'
+      },
+      /*jshint camelcase:false */
+      protractor_webdriver_manager_start: {
+        options: {
+          stdout: false,
+          stdin: false
+        },
+        command: require('path').resolve(__dirname, 'node_modules', 'grunt-protractor-runner', 'node_modules', '.bin', 'webdriver-manager') + ' start'
+      }
+    },
+
+    protractor: {
+      e2e: {
+        options: {
+          configFile: 'config/protractor.conf.js',
+          keepAlive: true,
+          args: {}
+        }
+      }
+    },
+
+    concurrent: {
+      protractor: ['shell:protractor_webdriver_manager_start', 'protractor:e2e'],
+      options: {
+        logConcurrentOutput: true
+      }
     }
+
   });
 
   // TASKS ----------------------------------
 
+  // Default tasks
   grunt.registerTask('default', 'server');
 
-  // dev tasks
+  // Development tasks
   grunt.registerTask('build', [
     'clean',
-    'jshint:dev',
+    'jshint',
     'jsonlint',
     'sass:dev',
     'autoprefixer',
     'modernizr',
     'copy:sass',
     'copy:css',
-    'copy:html',
     'copy:images',
-    'copy:javascript-dev',
     'copy:json',
+    'copy:javascript-dev',
+    'copy:html',
     'htmlbuild:build'
   ]);
 
-  // prod tasks.
+  // Production tasks
   grunt.registerTask('prod', [
     'clean:dist',
     'jshint:dev',
     'jsonlint',
-    'sass:prod',
-    'uglify:prod',
-    'json-minify:prod',
     'autoprefixer',
     'modernizr',
     'copy:sass',
     'copy:css',
-    'copy:html',
     'copy:images',
-    'copy:javascript-prod',
     'copy:json',
+    'copy:javascript-prod',
+    'copy:javascript-modernizr',
+    'copy:html',
+    'json-minify',
     'htmlbuild:prod',
+    'replace:build',
+    'useminPrepare',
+    'concat',
+    'uglify',
+    'replace:sourcemap',
+    'json-minify:prod',
+    'filerev',
+    'usemin',
+    'clean:src',
     'htmlmin'
   ]);
 
-  // run
+  // Run server locally tasks.
   grunt.registerTask('run', ['connect:server', 'watch']);
 
-  // run server locally
+  // Build server locally tasks.
   grunt.registerTask('server', ['build', 'run']);
+
+  // Unit tests tasks.
+  grunt.registerTask('ut', ['karma:unit']);
+
+  // E2E tests tasks.
+  grunt.registerTask('e2e', [
+    'connect:server',
+    'shell:protractor_webdriver_manager_update',
+    'concurrent:protractor'
+  ]);
 
   /*
     to run build local server:
@@ -379,7 +494,12 @@ module.exports = function(grunt) {
 
     to run build production
     grunt prod -env=prod
-
     grunt run
+
+    to run karma unit tests:
+    grunt ut -browser=PhantomJS
+
+    to run protractor tests:
+    grunt e2e
   */
 };
