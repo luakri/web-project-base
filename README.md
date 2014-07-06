@@ -18,7 +18,7 @@ Requirements
 -------------
     npm install
 
-Structure
+Structure (WIP)
 ---------
 The project is based on a source and a dist folder.
 The project consists of the following Grunt Tasks:
@@ -41,7 +41,7 @@ The project consists of the following Grunt Tasks:
 * [load-grunt-tasks](https://github.com/sindresorhus/time-grunt)
 * [time-grunt](https://github.com/sindresorhus/time-grunt)
 
-Tasks executed for local
+Tasks executed for local (WIP)
 ---------
 * Jshint Lint
 * Json Lint
@@ -51,7 +51,7 @@ Tasks executed for local
 * Modernizr Build
 * htmlbuild
 
-Tasks executed for production
+Tasks executed for production (WIP)
 ---------
 * Jshint Lint
 * Javascript concat
@@ -77,8 +77,22 @@ To run build for production:
     grunt prod -env=prod
 
 To run project for production, after build for production:
+
     grunt run
+
+To run unit tests
+
+    grunt ut --browser=PhantomJS
+
+To run E2E tests
+
+    grunt e2e
 
 Changelog
 ---------
-- *1.0*: Initial Release
+- *1.0.0*: Initial Release
+
+- *1.0.1*: (2014-07-06)
+	* Added Karma for unit tests.
+	* Added Protactor for E2E tests in non AngularJS site.
+	* Added grunt usemin
